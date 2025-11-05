@@ -50,6 +50,16 @@ const YoutubeConverter = () => {
     return null;
   };
 
+  // 이미 올바른 형식인지 확인
+  const isCorrectFormat = (iframeTag) => {
+    // 정확한 형식: width="숫자" height="숫자" src="https://www.youtube.com/embed/..." frameborder="0" allowfullscreen
+    return iframeTag.includes('width="') && 
+           iframeTag.includes('height="') && 
+           iframeTag.includes('src="https://www.youtube.com/embed/') && 
+           iframeTag.includes('frameborder="0"') && 
+           iframeTag.includes('allowfullscreen');
+  };
+
   // HTML에서 유튜브 링크를 iframe으로 변환
   const convertToIframe = (text) => {
     if (!text) return '';
@@ -65,6 +75,10 @@ const YoutubeConverter = () => {
     // <iframe ...>...</iframe> 형식
     const iframePattern = /<iframe[^>]*>.*?<\/iframe>/gi;
     convertedText = convertedText.replace(iframePattern, (match) => {
+      // 이미 올바른 형식이면 그대로 반환
+      if (isCorrectFormat(match)) {
+        return match;
+      }
       const id = extractVideoId(match);
       if (id) {
         return generateIframe(id);
@@ -76,8 +90,8 @@ const YoutubeConverter = () => {
     // <iframe ... /> 또는 <iframe ...> 형식
     const selfClosingIframePattern = /<iframe[^>]*\/?>/gi;
     convertedText = convertedText.replace(selfClosingIframePattern, (match) => {
-      // 이미 변환된 iframe은 건너뛰기
-      if (match.includes('width="') && match.includes('height="') && match.includes('frameborder="0"')) {
+      // 이미 올바른 형식이면 그대로 반환
+      if (isCorrectFormat(match)) {
         return match;
       }
       const id = extractVideoId(match);
@@ -88,6 +102,7 @@ const YoutubeConverter = () => {
     });
 
     // 3. URL 패턴 찾아서 변환 (www 있거나 없거나)
+    // 단, 이미 iframe 태그 안에 있는 URL은 건너뛰기
     const urlPatterns = [
       /(https?:\/\/)?(www\.)?youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/gi,
       /(https?:\/\/)?(www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/gi,
@@ -95,7 +110,17 @@ const YoutubeConverter = () => {
     ];
 
     urlPatterns.forEach(pattern => {
-      convertedText = convertedText.replace(pattern, (match) => {
+      convertedText = convertedText.replace(pattern, (match, p1, p2, p3) => {
+        // 이미 iframe 태그 안에 있는지 확인
+        const beforeMatch = convertedText.substring(0, convertedText.indexOf(match));
+        const lastIframe = beforeMatch.lastIndexOf('<iframe');
+        const lastCloseIframe = beforeMatch.lastIndexOf('</iframe>');
+        
+        // iframe 태그 안에 있는 URL이면 건너뛰기
+        if (lastIframe > lastCloseIframe) {
+          return match;
+        }
+        
         const id = extractVideoId(match);
         if (id) {
           return generateIframe(id);
