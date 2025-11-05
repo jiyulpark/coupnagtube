@@ -314,6 +314,72 @@ const YoutubeConverter = () => {
                 e.target.style.boxShadow = 'none';
               }}
             />
+            <div style={{
+              marginTop: '20px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '15px',
+              flexWrap: 'wrap'
+            }}>
+              <label style={{
+                fontSize: '16px',
+                fontWeight: '600',
+                color: '#333',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}>
+                가로 사이즈:
+              </label>
+              <input
+                type="number"
+                value={width}
+                onChange={(e) => {
+                  const value = parseInt(e.target.value) || 780;
+                  setWidth(Math.max(100, Math.min(2000, value)));
+                }}
+                min="100"
+                max="2000"
+                style={{
+                  padding: '10px 15px',
+                  fontSize: '15px',
+                  border: '2px solid #e0e0e0',
+                  borderRadius: '8px',
+                  width: '120px',
+                  fontWeight: '600',
+                  outline: 'none',
+                  transition: 'all 0.3s ease'
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#667eea';
+                  e.target.style.boxShadow = '0 0 0 3px rgba(102, 126, 234, 0.1)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#e0e0e0';
+                  e.target.style.boxShadow = 'none';
+                }}
+              />
+              <span style={{
+                fontSize: '14px',
+                color: '#666',
+                fontWeight: '500'
+              }}>
+                px
+              </span>
+              {width === 780 && (
+                <span style={{
+                  padding: '6px 12px',
+                  background: 'linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%)',
+                  color: 'white',
+                  borderRadius: '20px',
+                  fontSize: '13px',
+                  fontWeight: '600',
+                  boxShadow: '0 2px 8px rgba(238, 90, 111, 0.3)'
+                }}>
+                  쿠팡
+                </span>
+              )}
+            </div>
           </div>
 
           {/* 출력 영역 */}
