@@ -7,6 +7,7 @@ const YoutubeConverter = () => {
   const [copied, setCopied] = useState(false);
   const [isConverting, setIsConverting] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [width, setWidth] = useState(780);
 
   // 반응형 처리
   useEffect(() => {
@@ -88,9 +89,11 @@ const YoutubeConverter = () => {
     return convertedText;
   };
 
-  // iframe HTML 생성
+  // iframe HTML 생성 (비율 계산: 16:9)
   const generateIframe = (videoId) => {
-    return `<iframe width="780" height="439" src="https://www.youtube.com/embed/${videoId}?mute=1&controls=1" frameborder="0" allowfullscreen></iframe>`;
+    const aspectRatio = 9 / 16; // 16:9 비율
+    const height = Math.round(width * aspectRatio);
+    return `<iframe width="${width}" height="${height}" src="https://www.youtube.com/embed/${videoId}?mute=1&controls=1" frameborder="0" allowfullscreen></iframe>`;
   };
 
   const handleConvert = async () => {
