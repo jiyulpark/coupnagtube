@@ -668,7 +668,7 @@ const YoutubeConverter = () => {
                 left: 0,
                 fontSize: '24px'
               }}>2️⃣</span>
-              &quot;변환하기&quot; 버튼을 클릭하거나 <strong style={{color: '#667eea'}}>Ctrl/Cmd + Enter</strong>를 누르세요
+              변환하기 버튼을 클릭하거나 <strong style={{color: '#667eea'}}>Ctrl/Cmd + Enter</strong>를 누르세요
             </li>
             <li style={{ 
               marginBottom: '15px', 
