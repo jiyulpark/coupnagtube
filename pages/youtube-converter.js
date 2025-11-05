@@ -158,20 +158,6 @@ const YoutubeConverter = () => {
     setError('');
   };
 
-  const exampleLinks = [
-    'https://www.youtube.com/watch?v=crFxVE_yfN4',
-    'https://youtu.be/crFxVE_yfN4',
-    'https://www.youtube.com/embed/crFxVE_yfN4',
-    'crFxVE_yfN4',
-    '<iframe src="https://www.youtube.com/embed/crFxVE_yfN4"></iframe>',
-  ];
-
-  const handleExampleClick = (example) => {
-    setInput(example);
-    setOutput('');
-    setError('');
-  };
-
   return (
     <div style={{
       minHeight: '100vh',
@@ -542,73 +528,6 @@ const YoutubeConverter = () => {
             <span style={{ fontSize: '20px' }}>🗑️</span>
             {' '}초기화
           </button>
-        </div>
-
-        {/* 예제 링크 */}
-        <div className="card" style={{
-          backgroundColor: 'rgba(255, 255, 255, 0.95)',
-          padding: '30px',
-          borderRadius: '20px',
-          boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
-          border: '1px solid rgba(255, 255, 255, 0.18)',
-          marginBottom: '30px'
-        }}>
-          <h3 style={{
-            fontSize: '22px',
-            fontWeight: '700',
-            marginBottom: '20px',
-            color: '#333',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px'
-          }}>
-            <span style={{
-              background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              fontSize: '26px'
-            }}>💡</span>
-            예제 링크 (클릭하여 사용)
-          </h3>
-          <div style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: '15px'
-          }}>
-            {exampleLinks.map((link, index) => (
-              <button
-                key={index}
-                onClick={() => handleExampleClick(link)}
-                style={{
-                  padding: '12px 20px',
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '12px',
-                  cursor: 'pointer',
-                  fontSize: '13px',
-                  fontWeight: '600',
-                  transition: 'all 0.3s ease',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  maxWidth: '300px',
-                  boxShadow: '0 4px 15px rgba(102, 126, 234, 0.3)'
-                }}
-                onMouseOver={(e) => {
-                  e.target.style.transform = 'translateY(-2px) scale(1.05)';
-                  e.target.style.boxShadow = '0 6px 20px rgba(102, 126, 234, 0.5)';
-                }}
-                onMouseOut={(e) => {
-                  e.target.style.transform = 'translateY(0) scale(1)';
-                  e.target.style.boxShadow = '0 4px 15px rgba(102, 126, 234, 0.3)';
-                }}
-                title={link}
-              >
-                {link.length > 40 ? link.substring(0, 40) + '...' : link}
-              </button>
-            ))}
-          </div>
         </div>
 
         {/* 사용 방법 */}
