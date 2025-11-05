@@ -23,18 +23,21 @@ const YoutubeConverter = () => {
   const extractVideoId = (url) => {
     if (!url || typeof url !== 'string') return null;
 
-    // 이미 iframe 형식인 경우
+    // iframe src에서 추출
     const iframeMatch = url.match(/src=["']([^"']+)["']/);
     if (iframeMatch) {
       const src = iframeMatch[1];
-      const embedMatch = src.match(/youtube\.com\/embed\/([^?&]+)/);
+      // www 있거나 없거나 모두 처리
+      const embedMatch = src.match(/(?:www\.)?youtube\.com\/embed\/([^?&\/\s]+)/i);
       if (embedMatch) return embedMatch[1];
     }
 
-    // 다양한 유튜브 URL 형식 처리
+    // 직접 URL에서 추출 (www 있거나 없거나)
     const patterns = [
-      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/v\/)([^?&\/\s]+)/,
-      /youtube\.com\/watch\?.*?v=([^&\/\s]+)/,
+      /(?:www\.)?youtube\.com\/embed\/([^?&\/\s]+)/i,
+      /(?:www\.)?youtube\.com\/watch\?v=([^?&\/\s]+)/i,
+      /youtu\.be\/([^?&\/\s]+)/i,
+      /(?:www\.)?youtube\.com\/v\/([^?&\/\s]+)/i,
     ];
 
     for (const pattern of patterns) {
@@ -56,34 +59,49 @@ const YoutubeConverter = () => {
       return generateIframe(text.trim());
     }
 
-    // URL 또는 iframe 태그가 포함된 경우
-    const videoId = extractVideoId(text);
-    if (videoId) {
-      return generateIframe(videoId);
-    }
-
-    // HTML 내용 전체에서 유튜브 링크 찾기
-    const urlPattern = /(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/gi;
-    const iframePattern = /<iframe[^>]*src=["']([^"']+)["'][^>]*>/gi;
-    
     let convertedText = text;
 
-    // iframe 태그를 찾아서 변환
-    convertedText = convertedText.replace(iframePattern, (match, src) => {
-      const id = extractVideoId(src);
+    // 1. 기존 iframe 태그 전체를 찾아서 변환 (여러 개 처리)
+    // <iframe ...>...</iframe> 형식
+    const iframePattern = /<iframe[^>]*>.*?<\/iframe>/gi;
+    convertedText = convertedText.replace(iframePattern, (match) => {
+      const id = extractVideoId(match);
       if (id) {
         return generateIframe(id);
       }
       return match;
     });
 
-    // URL 패턴을 찾아서 변환
-    convertedText = convertedText.replace(urlPattern, (match) => {
+    // 2. 닫는 태그 없는 iframe도 처리
+    // <iframe ... /> 또는 <iframe ...> 형식
+    const selfClosingIframePattern = /<iframe[^>]*\/?>/gi;
+    convertedText = convertedText.replace(selfClosingIframePattern, (match) => {
+      // 이미 변환된 iframe은 건너뛰기
+      if (match.includes('width="') && match.includes('height="') && match.includes('frameborder="0"')) {
+        return match;
+      }
       const id = extractVideoId(match);
       if (id) {
         return generateIframe(id);
       }
       return match;
+    });
+
+    // 3. URL 패턴 찾아서 변환 (www 있거나 없거나)
+    const urlPatterns = [
+      /(https?:\/\/)?(www\.)?youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/gi,
+      /(https?:\/\/)?(www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/gi,
+      /(https?:\/\/)?youtu\.be\/([a-zA-Z0-9_-]{11})/gi,
+    ];
+
+    urlPatterns.forEach(pattern => {
+      convertedText = convertedText.replace(pattern, (match) => {
+        const id = extractVideoId(match);
+        if (id) {
+          return generateIframe(id);
+        }
+        return match;
+      });
     });
 
     return convertedText;
